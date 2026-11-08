@@ -12,6 +12,7 @@ Este proyecto resuelve el problema de la **inconsistencia y alucinación** de lo
 2. **Sub-Agentes Especializados**: Cada módulo del proyecto (`api/`, `ui/`, `core/`, `mcp_server/`, `docs/`) tiene su propio [`AGENTS.md`](./api/AGENTS.md) con reglas no negociables (**ALWAYS / NEVER**) y árboles de decisión adaptados a su tecnología.
 3. **Catálogo de Skills Reutilizables ([`skills/`](./skills/))**: Más de 20 habilidades empaquetadas que enseñan a la IA los estándares exactos de código (Next.js 16, React 19, TypeScript, Tailwind 4, Django, PostgreSQL, Playwright, TDD, Conventional Commits y más).
 4. **Sincronización Automática ([`skill-sync`](./skills/skill-sync))**: Cada vez que se añade o modifica una skill, un script regenera automáticamente las tablas de invocación de los agentes.
+5. **Supervisión Zero-Trust y Cabecera de Transparencia**: Validación empírica obligatoria en disco (compilación real, linters, tests) y ficha visual estándar que muestra qué sub-agente, skill y regla están activos en cada turno.
 
 ---
 
@@ -115,9 +116,11 @@ Solo debes editar esas líneas iniciales para que el agente de IA conozca de inm
 3. **El Sub-Agente carga las Skills requeridas**:
    - Revisa la tabla `Auto-invoke` y carga [`backend-api`](./skills/backend-api/SKILL.md).
    - Aplica las reglas obligatorias (`ALWAYS / NEVER`): UUIDv4 en PKs, timestamps de auditoría, controladores delgados y manejo unificado de errores.
-4. **El Sub-Agente valida y reporta**:
-   - Aplica TDD creando o ejecutando los tests correspondientes.
-   - Devuelve un informe estructurado de cambios al Agente Principal para entregártelo de forma clara y limpia.
+4. **El Sub-Agente valida bajo Protocolo Zero-Trust y reporta**:
+   - Inspecciona los archivos modificados físicamente en disco (`git diff`).
+   - Ejecuta validación empírica real (compilador, linters, pruebas unitarias o de tipos).
+   - Si detecta un error o regresión, ejecuta el bucle de auto-corrección antes de responder.
+   - Presenta la respuesta encabezada con la ficha de identificación del Sub-Agente y el resumen de cambios.
 
 ---
 

@@ -119,6 +119,63 @@ Al realizar cualquiera de estas acciones, el agente de IA **DEBE invocar primero
 
 ---
 
+## Protocolo de Trabajo para Asistentes de IA (Modo Autónomo)
+
+1. **Ruteo**: Determina qué componente o sub-agente es responsable de la tarea (`api/`, `ui/`, `core/`, etc.).
+2. **Consulta de Skills**: Lee el `SKILL.md` pertinente antes de generar código o ejecutar cambios.
+3. **Ejecución Proactiva e Inmediata (Autonomous Mode)**:
+   - Ante solicitudes de revisión, optimización, auditoría o refactorización, **NUNCA** quedarse en diagnósticos puramente teóricos ni detenerse a pedir confirmación innecesaria ("¿Deseas que lo aplique?").
+   - El agente DEBE asumir de inmediato el rol del Sub-Agente competente, editar los archivos en disco directamente aplicando los guardrails y verificar empíricamente.
+4. **Verificación Físico-Empírica (Zero-Trust)**:
+   - Comprobar sintaxis, tipos, linters y suites de pruebas reales antes de dar por cerrada la tarea.
+5. **Resumen al Usuario**: Entregar los archivos modificados con enlaces navegables, comandos de prueba ejecutados y tabla de resultados.
+
+---
+
+## 🏷️ Formato Obligatorio de Respuestas (Identificación de Sub-Agente)
+
+Toda respuesta técnica o reporte de intervención del asistente de IA en este repositorio **DEBE** comenzar obligatoriamente con la ficha de identificación del Sub-Agente activo para garantizar trazabilidad y transparencia visual:
+
+```text
+┌─────────────────────────────────────────────────────────┐
+│ 🤖 SUB-AGENTE ACTIVO : [Backend API / Frontend UI / Core / Orquestador]
+│ 📚 SKILL DE DOMINIO  : [backend-api / frontend-ui / typescript / etc.]
+│ 📋 ARCHIVO DE REGLAS : [api/AGENTS.md / ui/AGENTS.md / core/AGENTS.md]
+│ 🎯 FASE             : [Ejecución / Supervisión Zero-Trust / Resumen]
+└─────────────────────────────────────────────────────────┘
+```
+
+> [!TIP]
+> **Personalización para tu Proyecto:**
+> - Puedes adaptar los nombres de los sub-agentes, las rutas de las reglas y las skills según la estructura real de tu repositorio (por ejemplo: si usas `backend/` y `frontend/`, ajusta `backend/AGENTS.md` y `frontend/AGENTS.md`).
+> - Si prefieres respuestas más concisas sin cabecera visual, puedes remover o comentar esta sección en tu copia local.
+
+---
+
+## 🛡️ Protocolo de Supervisión Zero-Trust (Verificación Empírica)
+
+El Agente Orquestador Principal **NUNCA** debe confiar ciegamente en el reporte textual o afirmaciones de éxito de un sub-agente o herramienta. Debe asumir una postura de desconfianza por defecto y auditar el trabajo siguiendo estas reglas:
+
+1. **Inspección de Cambios Físicos (Ground Truth):**
+   - No dar por hecho que un archivo fue creado o modificado solo porque el asistente lo reporte textualmente.
+   - Usar herramientas de inspección (`git diff`, lectura de archivos) para confirmar que los cambios existen físicamente en disco y que no hay sintaxis rota, código truncado ni marcadores de conflicto.
+
+2. **Verificación Empírica Independiente (Build & Test Checks):**
+   - **Frontend / UI:** Si el sub-agente afirma que la interfaz o componente está listo, ejecutar la compilación, linter o chequeo de tipos del proyecto (ej. `npm run build`, `pnpm type-check`, `yarn build`, `ng build`). Si el compilador o bundler arroja errores, el trabajo NO está terminado.
+   - **Backend / API:** Comprobar la sintaxis, pruebas unitarias o linters del lenguaje (ej. `pytest`, `cargo check`, `go test`, `php -l`, `composer test`, `npm test`). Verificar que no existan imports rotos, variables indefinidas ni contratos de API inconsistentes.
+
+3. **Auditoría de Guardrails de Skills:**
+   - Comprobar que no se violaron las reglas estrictas `ALWAYS / NEVER` de las skills activas en el proyecto:
+     - ❌ **Tipado débil:** Prohibir el uso injustificado de `any` o tipos dinámicos inseguros en lenguajes estáticos.
+     - ❌ **Fugas de recursos:** Comprobar que streams, subscriptions, event listeners o conexiones a bases de datos se liberen adecuadamente.
+     - ❌ **Bloqueo del hilo principal:** Tareas pesadas, llamadas a APIs externas lentas o I/O intensivo deben delegarse a workers, queues o background jobs.
+     - ❌ **Mutaciones sin seguridad transaccional:** Operaciones críticas que modifiquen múltiples tablas o entidades deben estar protegidas con transacciones atómicas.
+
+4. **Bucle de Auto-Corrección:**
+   - Si la verificación empírica arroja fallas o advertencias bloqueantes, el asistente no debe trasladar el error al usuario como solución terminada; debe auto-corregir el código en disco y volver a ejecutar la verificación hasta obtener un estado verde/limpio.
+
+---
+
 ## Directrices de Commits y Pull Requests
 
 1. **Commits**: Formato Conventional Commits: `<tipo>(<scope>): <descripción>`.
