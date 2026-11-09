@@ -42,6 +42,7 @@
 | `git-commit` | Formato estricto Conventional Commits | [SKILL.md](skills/git-commit/SKILL.md) |
 | `git-pr` | Flujo de Pull Requests, plantillas y checklists | [SKILL.md](skills/git-pr/SKILL.md) |
 | `changelog` | Mantenimiento de CHANGELOG.md (Keep a Changelog) | [SKILL.md](skills/changelog/SKILL.md) |
+| `agent-artifacts` | Protocolo de Artifacts interactivos y separación de canales | [SKILL.md](skills/agent-artifacts/SKILL.md) |
 | `mcp-server` | Creación de Tools y Resources para servidores MCP | [SKILL.md](skills/mcp-server/SKILL.md) |
 | `test-api` | Pruebas de integración y unitarias para APIs | [SKILL.md](skills/test-api/SKILL.md) |
 | `test-ui` | Pruebas E2E y de componentes (Playwright) | [SKILL.md](skills/test-ui/SKILL.md) |
@@ -91,11 +92,14 @@ Al realizar cualquiera de estas acciones, el agente de IA **DEBE invocar primero
 | Creating Zod schemas | `zod-4` |
 | Creating a git commit | `git-commit` |
 | Creating new skills | `skill-creator` |
+| Creating technical implementation plan | `agent-artifacts` |
 | Creating/modifying backend models, views, or endpoints | `backend-api` |
 | Creating/modifying frontend UI components | `frontend-ui` |
+| Delivering performance diagnosis or benchmarks | `agent-artifacts` |
 | Designing API architecture and database access | `backend-api` |
 | Fill pull request template and checklist | `git-pr` |
 | Fixing bug | `tdd` |
+| Generating architecture analysis or audit report | `agent-artifacts` |
 | Implementing backend business logic and services | `backend-api` |
 | Implementing feature | `tdd` |
 | Modifying component | `tdd` |

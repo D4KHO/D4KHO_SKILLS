@@ -92,3 +92,4 @@ flowchart TD
 ¿Es una pregunta al usuario para aclarar requisitos?         → Responder DIRECTO en chat
 ¿Es un análisis técnico, auditoría, benchmark o plan?        → CREAR ARTIFACT en disco
 ```
+
