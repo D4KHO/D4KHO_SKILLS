@@ -13,6 +13,7 @@ Este proyecto resuelve el problema de la **inconsistencia y alucinación** de lo
 3. **Catálogo de Skills Reutilizables ([`skills/`](./skills/))**: Más de 20 habilidades empaquetadas que enseñan a la IA los estándares exactos de código (Next.js 16, React 19, TypeScript, Tailwind 4, Django, PostgreSQL, Playwright, TDD, Conventional Commits y más).
 4. **Sincronización Automática ([`skill-sync`](./skills/skill-sync))**: Cada vez que se añade o modifica una skill, un script regenera automáticamente las tablas de invocación de los agentes.
 5. **Supervisión Zero-Trust y Cabecera de Transparencia**: Validación empírica obligatoria en disco (compilación real, linters, tests) y ficha visual estándar que muestra qué sub-agente, skill y regla están activos en cada turno.
+6. **Protocolo de Artifacts Automáticos (Separación de Canales)**: Desacopla las auditorías, diagnósticos de rendimiento y planes técnicos extensos del chat de conversación. La IA los escribe automáticamente en disco como Artifacts Markdown interactivos con diagramas Mermaid, entregando en el chat únicamente un resumen ejecutivo y las decisiones clave.
 
 ---
 
@@ -121,6 +122,68 @@ Solo debes editar esas líneas iniciales para que el agente de IA conozca de inm
    - Ejecuta validación empírica real (compilador, linters, pruebas unitarias o de tipos).
    - Si detecta un error o regresión, ejecuta el bucle de auto-corrección antes de responder.
    - Presenta la respuesta encabezada con la ficha de identificación del Sub-Agente y el resumen de cambios.
+
+---
+
+## 📑 Protocolo de Artifacts Automáticos (Auditorías & Planes Técnicos)
+
+Uno de los problemas más comunes al trabajar con asistentes de IA en tareas de ingeniería es que, al pedirles un análisis de rendimiento, seguridad o arquitectura, suelen volcar cientos de líneas de texto en la ventana de chat, saturando la pantalla y perdiendo persistencia.
+
+D4KHO_SKILLS estandariza este comportamiento mediante una **regla no negociable en el Orquestador**:
+
+```text
+┌────────────────────────────────────────────────────────┐
+│  SOLICITUD: "Analiza el rendimiento del proyecto..."   │
+└───────────────────────────┬────────────────────────────┘
+                            │
+               ┌────────────┴────────────┐
+               ▼                         ▼
+   [ Artifact en Disco / Brain ]    [ Ventana de Chat ]
+   ├── Resumen Ejecutivo            ├── Ficha de Sub-Agente Activo
+   ├── Diagrama Mermaid             ├── Enlace directo clicable al Artifact
+   ├── Tabla de Cuellos de Botella  └── 2-3 Decisiones Clave / Próximos Pasos
+   ├── Matriz Impacto vs Esfuerzo
+   └── Plan de Acción con Código
+```
+
+### ¿Cómo funciona en cualquier proyecto replicado?
+Cuando el usuario solicita una auditoría o plan:
+1. El agente de IA **detecta la intención** (análisis, auditoría, benchmark, diagnóstico).
+2. **Crea automáticamente el Artifact** en el directorio persistente (`<appDataDir>/brain/<conversation-id>/nombre_reporte.md` en Antigravity / Claude Code, o en `docs/analisis/` en repositorios estándar).
+3. **Mantiene el chat limpio y accionable:** En la conversación solo entrega la ficha del sub-agente, el link directo al archivo generado y las opciones que requieren autorización humana.
+
+> [!NOTE]
+> **¿Y con preguntas cotidianas o simples?**  
+> Para preguntas normales (ej. *"¿dónde está mi archivo .md?", "¿cómo corro los tests?", "¿qué hace esta función?"*), la regla prohíbe crear artifacts. El asistente responde de forma **inmediata, directa y ágil en el chat** sin crear archivos innecesarios.
+
+---
+
+## 📋 Guía Rápida: Cómo Replicar esta Arquitectura en Cualquier Proyecto
+
+Para llevar este ecosistema de sub-agentes, skills y artifacts a cualquier repositorio nuevo o existente (ej. un proyecto Laravel + Angular, FastAPI + React, Django + Vue, o Go + Flutter):
+
+### Paso 1: Copiar el Orquestador Raíz
+Copia [`AGENTS.md`](./AGENTS.md) a la raíz de tu nuevo proyecto y personaliza el bloque inicial de metadatos:
+```markdown
+<!-- NOMBRE DEL PROYECTO: Mi App Inmobiliaria                               -->
+<!-- URL LOCAL BACKEND API: http://localhost:8000/api                        -->
+<!-- URL LOCAL FRONTEND UI: http://localhost:4200                            -->
+```
+
+### Paso 2: Crear los Sub-Agentes por Directorio
+Crea un archivo `AGENTS.md` dentro de cada carpeta principal del proyecto adaptado a sus tecnologías reales:
+- Si tu backend está en `backend/`, crea `backend/AGENTS.md` con las reglas de tu framework y base de datos.
+- Si tu frontend está en `frontend/`, crea `frontend/AGENTS.md` con las reglas de tus componentes y estado.
+- *Tip*: Puedes usar como base las plantillas en [`api/AGENTS.md`](./api/AGENTS.md) y [`ui/AGENTS.md`](./ui/AGENTS.md).
+
+### Paso 3: Copiar las Skills Necesarias
+Copia la carpeta `skills/` (o crea un symlink) con las habilidades que aplican a tu stack (ej. `laravel-backend`, `angular-frontend`, `postgresql-indexing`, `tdd`, `git-commit`).
+
+### Paso 4: ¡Listo! El Asistente de IA Actúa en Modo Autónomo
+Cualquier agente moderno (Google Antigravity, Claude Code, Cursor, Copilot Workspace) leerá la jerarquía automáticamente y:
+- Asumirá la identidad del sub-agente correcto con la ficha visual.
+- Seguirá el protocolo Zero-Trust verificando en disco.
+- Creará artifacts estructurados en análisis extensos sin saturar tu chat.
 
 ---
 

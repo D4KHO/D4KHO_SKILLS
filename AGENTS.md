@@ -128,7 +128,9 @@ Al realizar cualquiera de estas acciones, el agente de IA **DEBE invocar primero
    - El agente DEBE asumir de inmediato el rol del Sub-Agente competente, editar los archivos en disco directamente aplicando los guardrails y verificar empíricamente.
 4. **Verificación Físico-Empírica (Zero-Trust)**:
    - Comprobar sintaxis, tipos, linters y suites de pruebas reales antes de dar por cerrada la tarea.
-5. **Resumen al Usuario**: Entregar los archivos modificados con enlaces navegables, comandos de prueba ejecutados y tabla de resultados.
+5. **Entrega de Resultados & Separación de Canales (Artifacts vs. Chat)**:
+   - **Para auditorías, análisis, diagnósticos o planes extensos:** La IA **DEBE** generar obligatoriamente un **Artifact Markdown (.md)** estructurado y entregar en el chat únicamente la ficha de identificación, el enlace al artifact y las decisiones clave (ver sección *Protocolo de Entrega de Auditorías y Artifacts*).
+   - **Para modificaciones de código:** Entregar la lista de archivos modificados con enlaces navegables, comandos de prueba ejecutados y tabla de resultados.
 
 ---
 
@@ -149,6 +151,48 @@ Toda respuesta técnica o reporte de intervención del asistente de IA en este r
 > **Personalización para tu Proyecto:**
 > - Puedes adaptar los nombres de los sub-agentes, las rutas de las reglas y las skills según la estructura real de tu repositorio (por ejemplo: si usas `backend/` y `frontend/`, ajusta `backend/AGENTS.md` y `frontend/AGENTS.md`).
 > - Si prefieres respuestas más concisas sin cabecera visual, puedes remover o comentar esta sección en tu copia local.
+
+---
+
+## 📑 Protocolo de Entrega de Auditorías, Análisis y Planes (Artifacts Obligatorios)
+
+> **PROPÓSITO UNIVERSAL**: Evitar la saturación del contexto y de la ventana de chat con reportes kilométricos. Separa el documento técnico profundo (Artifact interactivo/persistente) de la conversación ágil con el desarrollador (Chat ejecutivo).
+
+Siempre que el usuario solicite un **análisis de arquitectura, auditoría de seguridad/código, diagnóstico de rendimiento, benchmark, comparativa tecnológica o plan de implementación extenso**:
+
+### 1. 🚫 Regla de Oro: Prohibido volcar el análisis completo en el chat
+La IA **NUNCA** debe imprimir un reporte extenso directamente en la ventana de conversación. Volcar párrafos y análisis largos en el chat degrada la experiencia del usuario, rompe la trazabilidad y satura la pantalla.
+
+### 2. 📝 Creación Obligatoria de Artifact en Disco
+La IA **DEBE invocar de inmediato la herramienta de escritura de archivos** para crear el reporte como un documento Markdown (`.md`):
+- **En entornos con soporte nativo de Artifacts (Google Antigravity, Claude Code, Cursor):**
+  - Escribir en la ruta del directorio de artifacts: `<appDataDir>/brain/<conversation-id>/nombre_reporte.md` pasando los metadatos correspondientes (`ArtifactMetadata: { UserFacing: true, RequestFeedback: false, Summary: "..." }`).
+- **En entornos generales o sin directorio de conversación:**
+  - Crear el archivo directamente en la carpeta de documentación del proyecto: `docs/analisis/nombre_reporte.md` o `.agents/reports/nombre_reporte.md`.
+
+### 3. 📐 Estructura Estándar y Obligatoria del Artifact
+Todo artifact técnico generado por el ecosistema debe estructurarse con la máxima calidad profesional:
+1. **📌 Resumen Ejecutivo (Executive Summary):** Diagnóstico general en 1 o 2 párrafos y viabilidad del cambio.
+2. **📊 Diagrama Visual (Mermaid):** Diagrama de flujo (`flowchart TD/LR`), secuencia o entidad-relación que ilustre el cuello de botella o la arquitectura propuesta.
+3. **🔍 Hallazgos y Causas Raíz:** Desglose punto por punto con enlaces a los archivos físicos y fragmentos de código exactos.
+4. **⚖️ Matriz de Priorización (Impacto vs. Esfuerzo):** Tabla comparativa con dificultad, riesgo, ganancia estimada y prioridad (🔴 Urgente / 🟡 Media / 🟢 Opcional).
+5. **🛠️ Plan de Acción Accionable:** Pasos secuenciales de implementación con fragmentos de código de solución listos para aplicar.
+
+### 4. 💬 Formato de Respuesta en Chat (Ultra-Resumido)
+Tras generar el Artifact, la respuesta del asistente en el chat **DEBE limitarse estrictamente** a:
+1. La **Ficha de Identificación de Sub-Agente** reglamentaria.
+2. Un **enlace clicable directo** al artifact generado: `👉 [nombre_reporte.md](file:///ruta/absoluta/al/archivo.md)`.
+3. Un **resumen ejecutivo de 3 a 5 viñetas** con los hallazgos principales.
+4. Las **2 o 3 preguntas o decisiones clave** que requieren la aprobación del usuario para pasar a la acción.
+
+### 5. ⚡ Cuándo NO Generar un Artifact (Respuestas Directas en Chat)
+La IA **NUNCA debe crear ni modificar un Artifact** para interacciones cotidianas o preguntas puntuales:
+- **Preguntas de navegación o ubicación:** Ejemplos: *"¿dónde está mi archivo .md?", "¿dónde configuro el puerto de la API?", "¿cómo se llama la función de login?"*.
+- **Consultas breves o puntuales:** Preguntas conceptuales que se responden en 1 o 2 párrafos, sintaxis de comandos o dudas rápidas.
+- **Consultas de estado y soporte:** Dudas sobre tests, errores de consola rápidos o confirmaciones de lectura.
+- **Diálogo y clarificación:** Preguntas dirigidas al usuario solicitando aclaración de requisitos o aprobación.
+
+👉 **En todos estos casos cotidianos**, la IA **DEBE responder de forma directa, ágil y concisa en el chat**, sin invocar herramientas de archivos ni crear artifacts innecesarios que ensucien el espacio de trabajo.
 
 ---
 
